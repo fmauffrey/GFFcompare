@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import argparse
 from BCBio import GFF
 
@@ -43,6 +45,21 @@ def parseGFF(gff_file):
 
     return content
 
+def saveContent(all_features):
+    """
+    Save the content of features in separate files.
+    """
+    for feature_type, data in all_features.items():
+        with open(f"{feature_type}_Common.txt", "w") as f:
+            for item in data["Common"]:
+                f.write(f"{item}\n")
+        with open(f"{feature_type}_Unique_Gff1.txt", "w") as f:
+            for item in data["Unique Gff1"]:
+                f.write(f"{item}\n")
+        with open(f"{feature_type}_Unique_Gff2.txt", "w") as f:
+            for item in data["Unique Gff2"]:
+                f.write(f"{item}\n")
+
 def summaryTable(gff1, gff2):
 
     # Prepare features data
@@ -57,15 +74,21 @@ def summaryTable(gff1, gff2):
     for feature_type, data in all_features.items():
         print(f"{feature_type}\t{len(data['Common'])}\t{len(data['Unique Gff1'])}\t{len(data['Unique Gff2'])}")
 
+    return all_features
 
 if __name__ == "__main__":
     #Arguments parser
     parser=argparse.ArgumentParser(description="Compare two GFF files and report differences.")
     parser.add_argument("-1", dest="gff1", type=str, help="First GFF file", required=True)
     parser.add_argument("-2", dest="gff2",type=str, help="Second GFF file", required=True)
+    parser.add_argument("--savecontent", dest="save", action="store_true", help="Save content in files")
     args=parser.parse_args()
 
     # Main
     contentGFF1 = parseGFF(args.gff1)
     contentGFF2 = parseGFF(args.gff2)
-    summaryTable(contentGFF1, contentGFF2)
+    content = summaryTable(contentGFF1, contentGFF2)
+
+    # Optionnal
+    if args.save:
+        saveContent(content)

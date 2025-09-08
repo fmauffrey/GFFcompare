@@ -23,7 +23,9 @@ def parseGFF(gff_file):
             if feature.type == "CDS":
                 try:
                     uniref = [x for x in feature.qualifiers["Dbxref"] if x.startswith("UniRef:")]
-                    content[feature.type].append(uniref[0])
+                    for id in uniref:
+                        if "UniRef50" in id:
+                            content[feature.type].append(id)
                 except:
                     pass
 
